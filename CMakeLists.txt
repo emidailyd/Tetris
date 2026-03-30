@@ -32,7 +32,7 @@ target_link_libraries(QtTetrisPoc PRIVATE
     Qt${QT_VERSION_MAJOR}::Widgets
 )
 
-add_custom_target(build_and_run
+add_custom_target(poc_build_and_run
     COMMAND $<TARGET_FILE:QtTetrisPoc>
     DEPENDS QtTetrisPoc
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}

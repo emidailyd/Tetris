@@ -24,5 +24,5 @@ A minimal Qt-based Tetris PoC: single block falling on a 10x20 grid.
 ## Run
 ```powershell
 cmake -S . -B build
-cmake --build build --target build_and_run
+cmake --build build --target poc_build_and_run
 ```
