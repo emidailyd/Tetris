@@ -21,7 +21,7 @@ Tetris game implemented with C++ for OOP course.
 ## Proof of Concept (PoC)
 A minimal Qt-based Tetris PoC: single block falling on a 10x20 grid.
 
-**Run on Windows:**
+## Run
 ```powershell
 cmake -S . -B build
 cmake --build build --target build_and_run
