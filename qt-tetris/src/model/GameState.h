@@ -14,6 +14,8 @@ public:
     const Board& GameBoard() const;
     const std::optional<Tetromino>& ActivePiece() const;
     bool IsGameOver() const;
+    int Score() const;
+    int ClearedLineCount() const;
 
     void Reset();
 
@@ -32,5 +34,7 @@ private:
     Board gameBoard;
     std::optional<Tetromino> activePiece;
     bool gameOver = false;
+    int score = 0;
+    int clearedLineCount = 0;
     std::mt19937 randomEngine;
 };

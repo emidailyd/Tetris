@@ -13,6 +13,22 @@ constexpr std::array<TetrominoType, 7> PIECE_TYPES = {
     TetrominoType::J,
     TetrominoType::L,
 };
+
+int ScoreForLineClear(int clearedLines)
+{
+    switch (clearedLines) {
+    case 1:
+        return 100;
+    case 2:
+        return 300;
+    case 3:
+        return 500;
+    case 4:
+        return 800;
+    default:
+        return 0;
+    }
+}
 }
 
 GameState::GameState()
@@ -36,11 +52,23 @@ bool GameState::IsGameOver() const
     return gameOver;
 }
 
+int GameState::Score() const
+{
+    return score;
+}
+
+int GameState::ClearedLineCount() const
+{
+    return clearedLineCount;
+}
+
 void GameState::Reset()
 {
     gameBoard = Board();
     activePiece.reset();
     gameOver = false;
+    score = 0;
+    clearedLineCount = 0;
     SpawnNextPiece();
 }
 
@@ -99,6 +127,10 @@ bool GameState::StepDownOrLock()
     }
 
     gameBoard.Place(*activePiece);
+    const int linesClearedNow = gameBoard.ClearCompletedLines();
+    clearedLineCount += linesClearedNow;
+    score += ScoreForLineClear(linesClearedNow);
+
     activePiece.reset();
     SpawnNextPiece();
     return true;
@@ -109,7 +141,7 @@ Tetromino GameState::GenerateRandomPiece()
     std::uniform_int_distribution<int> distribution(0, static_cast<int>(PIECE_TYPES.size()) - 1);
     const TetrominoType randomType = PIECE_TYPES[static_cast<std::size_t>(distribution(randomEngine))];
 
-    // spawn at the top center
+    // spawn at the top center 
     return Tetromino(randomType, 0, (Board::COLUMN_COUNT / 2) - 2);
 }
 
