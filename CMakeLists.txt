@@ -41,6 +41,7 @@ add_custom_target(poc_build_and_run
 
 add_library(QtTetrisCore STATIC
     qt-tetris/src/model/Board.cpp
+    qt-tetris/src/model/GameState.cpp
     qt-tetris/src/model/Tetromino.cpp
 )
 
