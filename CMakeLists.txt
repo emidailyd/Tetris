@@ -38,3 +38,12 @@ add_custom_target(poc_build_and_run
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
     USES_TERMINAL
 )
+
+add_library(QtTetrisCore STATIC
+    qt-tetris/src/model/Board.cpp
+    qt-tetris/src/model/Tetromino.cpp
+)
+
+target_include_directories(QtTetrisCore PUBLIC
+    qt-tetris/src
+)
