@@ -48,3 +48,24 @@ add_library(QtTetrisCore STATIC
 target_include_directories(QtTetrisCore PUBLIC
     qt-tetris/src
 )
+
+add_executable(QtTetris
+    qt-tetris/src/main.cpp
+    qt-tetris/src/TetrisGridWidget.cpp
+)
+
+target_include_directories(QtTetris PRIVATE
+    qt-tetris/src
+)
+
+target_link_libraries(QtTetris PRIVATE
+    Qt${QT_VERSION_MAJOR}::Widgets
+    QtTetrisCore
+)
+
+add_custom_target(core_build_and_run
+    COMMAND $<TARGET_FILE:QtTetris>
+    DEPENDS QtTetris
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    USES_TERMINAL
+)
