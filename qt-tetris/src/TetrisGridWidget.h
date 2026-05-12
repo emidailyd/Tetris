@@ -1,11 +1,12 @@
 #pragma once
 
-#include <QTimer>
 #include <QWidget>
 
-#include "model/GameState.h"
+#include "TetrisController.h"
+#include "TetrisRenderer.h"
 
 class QKeyEvent;
+class QPaintEvent;
 
 class TetrisGridWidget : public QWidget
 {
@@ -19,16 +20,13 @@ protected:
     void keyPressEvent(QKeyEvent *event) override;
 
 private slots:
-    void advanceGame();
+    void OnGameUpdated();
 
 private:
-    void resetGame();
-    void drawCell(QPainter &painter, int row, int column, const QColor &fillColor) const;
+    TetrisRenderer m_renderer;
+    TetrisController m_controller;
 
     static constexpr int kColumns = 10;
     static constexpr int kRows = 20;
     static constexpr int kCellSize = 28;
-
-    QTimer m_fallTimer;
-    GameState m_gameState;
 };
