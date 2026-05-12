@@ -1,4 +1,5 @@
 #include "TetrisRenderer.h"
+#include "model/GameConfig.h"
 
 #include <QFont>
 #include <QPen>
@@ -15,15 +16,15 @@ void TetrisRenderer::RenderGrid(QPainter &painter, int width, int height) const
     gridPen.setWidth(1);
     painter.setPen(gridPen);
 
-    for (int column = 0; column <= Board::COLUMN_COUNT; ++column)
+    for (int column = 0; column <= GameConfig::COLUMN_COUNT; ++column)
     {
-        const int x = column * CELL_SIZE;
+        const int x = column * GameConfig::CELL_SIZE;
         painter.drawLine(x, 0, x, height);
     }
 
-    for (int row = 0; row <= Board::ROW_COUNT; ++row)
+    for (int row = 0; row <= GameConfig::ROW_COUNT; ++row)
     {
-        const int y = row * CELL_SIZE;
+        const int y = row * GameConfig::CELL_SIZE;
         painter.drawLine(0, y, width, y);
     }
 }
@@ -31,9 +32,9 @@ void TetrisRenderer::RenderGrid(QPainter &painter, int width, int height) const
 void TetrisRenderer::RenderBoard(QPainter &painter, const Board &board) const
 {
     const auto &cells = board.Cells();
-    for (int row = 0; row < Board::ROW_COUNT; ++row)
+    for (int row = 0; row < GameConfig::ROW_COUNT; ++row)
     {
-        for (int column = 0; column < Board::COLUMN_COUNT; ++column)
+        for (int column = 0; column < GameConfig::COLUMN_COUNT; ++column)
         {
             if (cells[static_cast<std::size_t>(row)][static_cast<std::size_t>(column)] == Board::CellState::FILLED)
             {
@@ -51,7 +52,7 @@ void TetrisRenderer::RenderActivePiece(QPainter &painter, const std::optional<Te
     const QColor activeColor = ColorForTetrominoType(activePiece->Type());
     for (const Cell &cell : activePiece->Cells())
     {
-        if (cell.row >= 0 && cell.row < Board::ROW_COUNT && cell.column >= 0 && cell.column < Board::COLUMN_COUNT)
+        if (cell.row >= 0 && cell.row < GameConfig::ROW_COUNT && cell.column >= 0 && cell.column < GameConfig::COLUMN_COUNT)
         {
             DrawCell(painter, cell.row, cell.column, activeColor);
         }
@@ -92,10 +93,10 @@ QColor TetrisRenderer::ColorForTetrominoType(TetrominoType type)
 void TetrisRenderer::DrawCell(QPainter &painter, int row, int column, const QColor &fillColor) const
 {
     const QRect cellRect(
-        column * CELL_SIZE,
-        row * CELL_SIZE,
-        CELL_SIZE,
-        CELL_SIZE);
+        column * GameConfig::CELL_SIZE,
+        row * GameConfig::CELL_SIZE,
+        GameConfig::CELL_SIZE,
+        GameConfig::CELL_SIZE);
 
     painter.fillRect(cellRect.adjusted(2, 2, -2, -2), fillColor);
     painter.setPen(QPen(QColor(220, 220, 220), 1));

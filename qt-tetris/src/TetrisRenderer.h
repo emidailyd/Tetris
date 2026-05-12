@@ -17,7 +17,6 @@ public:
     void RenderGameOver(QPainter &painter, const QRect &rect) const;
 
     static QColor ColorForTetrominoType(TetrominoType type);
-    static constexpr int CELL_SIZE = 28;
 
 private:
     void DrawCell(QPainter &painter, int row, int column, const QColor &fillColor) const;
