@@ -1,4 +1,5 @@
 #include "TetrisGridWidget.h"
+#include "model/Board.h"
 
 #include <QKeyEvent>
 #include <QPainter>
@@ -8,7 +9,7 @@ TetrisGridWidget::TetrisGridWidget(QWidget *parent)
     : QWidget(parent), m_controller(this)
 {
     setWindowTitle("Tetris");
-    setFixedSize(kColumns * kCellSize, kRows * kCellSize);
+    setFixedSize(Board::COLUMN_COUNT * CellSize, Board::ROW_COUNT * CellSize);
     setFocusPolicy(Qt::StrongFocus);
 
     connect(&m_controller, &TetrisController::GameUpdated, this, &TetrisGridWidget::OnGameUpdated);

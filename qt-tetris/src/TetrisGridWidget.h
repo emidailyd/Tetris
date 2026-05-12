@@ -26,7 +26,5 @@ private:
     TetrisRenderer m_renderer;
     TetrisController m_controller;
 
-    static constexpr int kColumns = 10;
-    static constexpr int kRows = 20;
-    static constexpr int kCellSize = 28;
+    static constexpr int CellSize = 28;
 };
