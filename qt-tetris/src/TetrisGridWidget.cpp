@@ -9,7 +9,7 @@ TetrisGridWidget::TetrisGridWidget(QWidget *parent)
     : QWidget(parent), m_controller(this)
 {
     setWindowTitle("Tetris");
-    setFixedSize(Board::COLUMN_COUNT * CellSize, Board::ROW_COUNT * CellSize);
+    setFixedSize(Board::COLUMN_COUNT * TetrisRenderer::CELL_SIZE, Board::ROW_COUNT * TetrisRenderer::CELL_SIZE);
     setFocusPolicy(Qt::StrongFocus);
 
     connect(&m_controller, &TetrisController::GameUpdated, this, &TetrisGridWidget::OnGameUpdated);

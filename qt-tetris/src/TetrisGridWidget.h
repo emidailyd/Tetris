@@ -25,6 +25,4 @@ private slots:
 private:
     TetrisRenderer m_renderer;
     TetrisController m_controller;
-
-    static constexpr int CellSize = 28;
 };
