@@ -3,13 +3,11 @@
 #include <array>
 
 #include "Tetromino.h"
+#include "GameConfig.h"
 
 class Board
 {
 public:
-    static constexpr int ROW_COUNT = 20;
-    static constexpr int COLUMN_COUNT = 10;
-
     enum class CellState
     {
         EMPTY,
@@ -20,13 +18,13 @@ public:
 
     bool IsInside(int row, int column) const;
     bool IsOccupied(int row, int column) const;
-    bool CanPlace(const Tetromino& tetromino) const;
+    bool CanPlace(const Tetromino &tetromino) const;
 
-    void Place(const Tetromino& tetromino);
+    void Place(const Tetromino &tetromino);
     int ClearCompletedLines();
 
-    const std::array<std::array<CellState, COLUMN_COUNT>, ROW_COUNT>& Cells() const;
+    const std::array<std::array<CellState, GameConfig::COLUMN_COUNT>, GameConfig::ROW_COUNT> &Cells() const;
 
 private:
-    std::array<std::array<CellState, COLUMN_COUNT>, ROW_COUNT> boardCells{};
+    std::array<std::array<CellState, GameConfig::COLUMN_COUNT>, GameConfig::ROW_COUNT> boardCells{};
 };

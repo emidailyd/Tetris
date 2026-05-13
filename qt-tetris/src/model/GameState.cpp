@@ -1,34 +1,36 @@
 #include "GameState.h"
+#include "GameConfig.h"
 
 #include <array>
 
 namespace
 {
-constexpr std::array<TetrominoType, 7> PIECE_TYPES = {
-    TetrominoType::I,
-    TetrominoType::O,
-    TetrominoType::T,
-    TetrominoType::S,
-    TetrominoType::Z,
-    TetrominoType::J,
-    TetrominoType::L,
-};
+    constexpr std::array<TetrominoType, 7> PIECE_TYPES = {
+        TetrominoType::I,
+        TetrominoType::O,
+        TetrominoType::T,
+        TetrominoType::S,
+        TetrominoType::Z,
+        TetrominoType::J,
+        TetrominoType::L,
+    };
 
-int ScoreForLineClear(int clearedLines)
-{
-    switch (clearedLines) {
-    case 1:
-        return 100;
-    case 2:
-        return 300;
-    case 3:
-        return 500;
-    case 4:
-        return 800;
-    default:
-        return 0;
+    int ScoreForLineClear(int clearedLines)
+    {
+        switch (clearedLines)
+        {
+        case 1:
+            return 100;
+        case 2:
+            return 300;
+        case 3:
+            return 500;
+        case 4:
+            return 800;
+        default:
+            return 0;
+        }
     }
-}
 }
 
 GameState::GameState()
@@ -37,12 +39,12 @@ GameState::GameState()
     Reset();
 }
 
-const Board& GameState::GameBoard() const
+const Board &GameState::GameBoard() const
 {
     return gameBoard;
 }
 
-const std::optional<Tetromino>& GameState::ActivePiece() const
+const std::optional<Tetromino> &GameState::ActivePiece() const
 {
     return activePiece;
 }
@@ -74,7 +76,8 @@ void GameState::Reset()
 
 bool GameState::MoveActivePieceLeft()
 {
-    if (!activePiece.has_value() || gameOver) {
+    if (!activePiece.has_value() || gameOver)
+    {
         return false;
     }
 
@@ -85,7 +88,8 @@ bool GameState::MoveActivePieceLeft()
 
 bool GameState::MoveActivePieceRight()
 {
-    if (!activePiece.has_value() || gameOver) {
+    if (!activePiece.has_value() || gameOver)
+    {
         return false;
     }
 
@@ -96,7 +100,8 @@ bool GameState::MoveActivePieceRight()
 
 bool GameState::MoveActivePieceDown()
 {
-    if (!activePiece.has_value() || gameOver) {
+    if (!activePiece.has_value() || gameOver)
+    {
         return false;
     }
 
@@ -107,7 +112,8 @@ bool GameState::MoveActivePieceDown()
 
 bool GameState::RotateActivePiece()
 {
-    if (!activePiece.has_value() || gameOver) {
+    if (!activePiece.has_value() || gameOver)
+    {
         return false;
     }
 
@@ -118,11 +124,13 @@ bool GameState::RotateActivePiece()
 
 bool GameState::StepDownOrLock()
 {
-    if (!activePiece.has_value() || gameOver) {
+    if (!activePiece.has_value() || gameOver)
+    {
         return false;
     }
 
-    if (MoveActivePieceDown()) {
+    if (MoveActivePieceDown())
+    {
         return true;
     }
 
@@ -141,14 +149,15 @@ Tetromino GameState::GenerateRandomPiece()
     std::uniform_int_distribution<int> distribution(0, static_cast<int>(PIECE_TYPES.size()) - 1);
     const TetrominoType randomType = PIECE_TYPES[static_cast<std::size_t>(distribution(randomEngine))];
 
-    // spawn at the top center 
-    return Tetromino(randomType, 0, (Board::COLUMN_COUNT / 2) - 2);
+    // spawn at the top center
+    return Tetromino(randomType, 0, (GameConfig::COLUMN_COUNT / 2) - 2);
 }
 
 bool GameState::SpawnNextPiece()
 {
     Tetromino nextPiece = GenerateRandomPiece();
-    if (!gameBoard.CanPlace(nextPiece)) {
+    if (!gameBoard.CanPlace(nextPiece))
+    {
         gameOver = true;
         return false;
     }
@@ -157,9 +166,10 @@ bool GameState::SpawnNextPiece()
     return true;
 }
 
-bool GameState::TryApplyActivePiece(const Tetromino& candidatePiece)
+bool GameState::TryApplyActivePiece(const Tetromino &candidatePiece)
 {
-    if (!gameBoard.CanPlace(candidatePiece)) {
+    if (!gameBoard.CanPlace(candidatePiece))
+    {
         return false;
     }
 
