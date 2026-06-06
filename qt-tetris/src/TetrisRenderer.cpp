@@ -59,6 +59,27 @@ void TetrisRenderer::RenderActivePiece(QPainter &painter, const std::optional<Te
     }
 }
 
+void TetrisRenderer::RenderStatusPanel(QPainter &painter, const QRect &rect, int score, int clearedLineCount) const
+{
+    painter.fillRect(rect, QColor(28, 36, 50));
+
+    painter.setPen(QColor(210, 224, 240));
+    painter.setFont(QFont("Arial", 14, QFont::Bold));
+    painter.drawText(rect.adjusted(16, 22, -16, -16), Qt::AlignLeft | Qt::AlignTop, "Score");
+
+    painter.setPen(Qt::white);
+    painter.setFont(QFont("Arial", 18, QFont::Bold));
+    painter.drawText(rect.adjusted(16, 50, -16, -16), Qt::AlignLeft | Qt::AlignTop, QString::number(score));
+
+    painter.setPen(QColor(210, 224, 240));
+    painter.setFont(QFont("Arial", 14, QFont::Bold));
+    painter.drawText(rect.adjusted(16, 110, -16, -16), Qt::AlignLeft | Qt::AlignTop, "Lines");
+
+    painter.setPen(Qt::white);
+    painter.setFont(QFont("Arial", 18, QFont::Bold));
+    painter.drawText(rect.adjusted(16, 138, -16, -16), Qt::AlignLeft | Qt::AlignTop, QString::number(clearedLineCount));
+}
+
 void TetrisRenderer::RenderGameOver(QPainter &painter, const QRect &rect) const
 {
     painter.fillRect(rect, QColor(0, 0, 0, 160));

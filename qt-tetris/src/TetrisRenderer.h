@@ -14,6 +14,7 @@ public:
     void RenderGrid(QPainter &painter, int width, int height) const;
     void RenderBoard(QPainter &painter, const Board &board) const;
     void RenderActivePiece(QPainter &painter, const std::optional<Tetromino> &activePiece) const;
+    void RenderStatusPanel(QPainter &painter, const QRect &rect, int score, int clearedLineCount) const;
     void RenderGameOver(QPainter &painter, const QRect &rect) const;
 
     static QColor ColorForTetrominoType(TetrominoType type);

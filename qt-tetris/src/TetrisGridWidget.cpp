@@ -10,7 +10,7 @@ TetrisGridWidget::TetrisGridWidget(QWidget *parent)
     : QWidget(parent), m_controller(this)
 {
     setWindowTitle("Tetris");
-    setFixedSize(GameConfig::COLUMN_COUNT * GameConfig::CELL_SIZE, GameConfig::ROW_COUNT * GameConfig::CELL_SIZE);
+    setFixedSize(GameConfig::BOARD_WIDTH + GameConfig::STATUS_PANEL_WIDTH, GameConfig::BOARD_HEIGHT);
     setFocusPolicy(Qt::StrongFocus);
 
     connect(&m_controller, &TetrisController::GameUpdated, this, &TetrisGridWidget::OnGameUpdated);
@@ -25,9 +25,13 @@ void TetrisGridWidget::paintEvent(QPaintEvent *event)
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing, false);
 
-    m_renderer.RenderGrid(painter, width(), height());
-    m_renderer.RenderBoard(painter, m_controller.GetGameState().GameBoard());
-    m_renderer.RenderActivePiece(painter, m_controller.GetGameState().ActivePiece());
+    const GameState &gameState = m_controller.GetGameState();
+    const QRect statusPanelRect(GameConfig::BOARD_WIDTH, 0, GameConfig::STATUS_PANEL_WIDTH, height());
+
+    m_renderer.RenderGrid(painter, GameConfig::BOARD_WIDTH, GameConfig::BOARD_HEIGHT);
+    m_renderer.RenderBoard(painter, gameState.GameBoard());
+    m_renderer.RenderActivePiece(painter, gameState.ActivePiece());
+    m_renderer.RenderStatusPanel(painter, statusPanelRect, gameState.Score(), gameState.ClearedLineCount());
 
     if (m_controller.IsGameOver())
     {
