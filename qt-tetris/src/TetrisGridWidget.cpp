@@ -91,9 +91,10 @@ void TetrisGridWidget::SelectDifficulty(GameDifficulty difficulty)
 
 void TetrisGridWidget::UpdateDifficultyButtonStyles()
 {
-    const QString activeStyle = "QPushButton { background-color: #64b4ff; color: #101820; font-weight: bold; border: 1px solid #dcecff; padding: 4px; }";
-    const QString inactiveStyle = "QPushButton { background-color: #3e4e60; color: white; border: 1px solid #6d7f95; padding: 4px; }"
-                                  "QPushButton:hover { background-color: #4d6076; }";
+    const QString activeStyle = "QPushButton { background-color: #64b4ff; color: #101820; font-weight: bold; border: 1px solid #dcecff; border-radius: 4px; padding: 5px; }"
+                                "QPushButton:hover { background-color: #7bc1ff; }";
+    const QString inactiveStyle = "QPushButton { background-color: #334155; color: #f4f7fb; border: 1px solid #708198; border-radius: 4px; padding: 5px; }"
+                                  "QPushButton:hover { background-color: #41536a; border-color: #9fb3ca; }";
 
     const GameDifficulty difficulty = m_controller.GetSettings().Difficulty();
     m_easyButton->setStyleSheet(difficulty == GameDifficulty::Easy ? activeStyle : inactiveStyle);
