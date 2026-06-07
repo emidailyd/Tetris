@@ -7,6 +7,7 @@
 
 class QKeyEvent;
 class QPaintEvent;
+class QPushButton;
 
 class TetrisGridWidget : public QWidget
 {
@@ -23,6 +24,13 @@ private slots:
     void OnGameUpdated();
 
 private:
+    void ConfigureSettingsButtons();
+    void SelectDifficulty(GameDifficulty difficulty);
+    void UpdateDifficultyButtonStyles();
+
     TetrisRenderer m_renderer;
     TetrisController m_controller;
+    QPushButton *m_easyButton = nullptr;
+    QPushButton *m_normalButton = nullptr;
+    QPushButton *m_hardButton = nullptr;
 };

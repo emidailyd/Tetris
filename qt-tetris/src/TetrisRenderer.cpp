@@ -78,6 +78,10 @@ void TetrisRenderer::RenderStatusPanel(QPainter &painter, const QRect &rect, int
     painter.setPen(Qt::white);
     painter.setFont(QFont("Arial", 18, QFont::Bold));
     painter.drawText(rect.adjusted(16, 138, -16, -16), Qt::AlignLeft | Qt::AlignTop, QString::number(clearedLineCount));
+
+    painter.setPen(QColor(210, 224, 240));
+    painter.setFont(QFont("Arial", 14, QFont::Bold));
+    painter.drawText(rect.adjusted(16, 190, -16, -16), Qt::AlignLeft | Qt::AlignTop, "Difficulty");
 }
 
 void TetrisRenderer::RenderGameOver(QPainter &painter, const QRect &rect) const

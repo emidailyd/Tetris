@@ -62,6 +62,18 @@ void TetrisController::ResetGame()
     m_gameState.Reset();
 }
 
+void TetrisController::SetDifficulty(GameDifficulty difficulty)
+{
+    if (m_settings.Difficulty() == difficulty)
+    {
+        return;
+    }
+
+    m_settings.SetDifficulty(difficulty);
+    ApplySettings();
+    emit GameUpdated();
+}
+
 void TetrisController::ApplySettings()
 {
     m_fallTimer.setInterval(m_settings.FallIntervalMs());

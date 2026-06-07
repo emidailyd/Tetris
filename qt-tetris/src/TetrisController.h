@@ -17,6 +17,7 @@ public:
     void HandleKeyPress(QKeyEvent *event);
     void StartGame();
     void ResetGame();
+    void SetDifficulty(GameDifficulty difficulty);
 
     const GameState &GetGameState() const { return m_gameState; }
     const GameSettings &GetSettings() const { return m_settings; }
