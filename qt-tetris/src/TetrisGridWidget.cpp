@@ -37,7 +37,7 @@ void TetrisGridWidget::paintEvent(QPaintEvent *event)
 
     if (m_controller.IsGameOver())
     {
-        m_renderer.RenderGameOver(painter, rect());
+        m_renderer.RenderGameOver(painter, QRect(0, 0, GameConfig::BOARD_WIDTH, GameConfig::BOARD_HEIGHT));
     }
 
     event->accept();
