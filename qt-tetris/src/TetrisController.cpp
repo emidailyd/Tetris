@@ -4,7 +4,7 @@ TetrisController::TetrisController(QObject *parent)
     : QObject(parent)
 {
     connect(&m_fallTimer, &QTimer::timeout, this, &TetrisController::AdvanceGame);
-    m_fallTimer.setInterval(300);
+    ApplySettings();
 }
 
 void TetrisController::HandleKeyPress(QKeyEvent *event)
@@ -60,6 +60,23 @@ void TetrisController::StartGame()
 void TetrisController::ResetGame()
 {
     m_gameState.Reset();
+}
+
+void TetrisController::SetDifficulty(GameDifficulty difficulty)
+{
+    if (m_settings.Difficulty() == difficulty)
+    {
+        return;
+    }
+
+    m_settings.SetDifficulty(difficulty);
+    ApplySettings();
+    emit GameUpdated();
+}
+
+void TetrisController::ApplySettings()
+{
+    m_fallTimer.setInterval(m_settings.FallIntervalMs());
 }
 
 void TetrisController::AdvanceGame()

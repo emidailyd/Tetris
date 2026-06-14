@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QTimer>
 
+#include "model/GameSettings.h"
 #include "model/GameState.h"
 
 class TetrisController : public QObject
@@ -16,8 +17,10 @@ public:
     void HandleKeyPress(QKeyEvent *event);
     void StartGame();
     void ResetGame();
+    void SetDifficulty(GameDifficulty difficulty);
 
     const GameState &GetGameState() const { return m_gameState; }
+    const GameSettings &GetSettings() const { return m_settings; }
     bool IsGameOver() const { return m_gameState.IsGameOver(); }
 
 signals:
@@ -27,6 +30,9 @@ private slots:
     void AdvanceGame();
 
 private:
+    void ApplySettings();
+
     QTimer m_fallTimer;
     GameState m_gameState;
+    GameSettings m_settings;
 };
