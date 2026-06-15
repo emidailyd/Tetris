@@ -175,7 +175,6 @@ void TetrisGridWidget::CreateGameOverOverlay()
     QLabel *scoreLabel = new QLabel(m_gameOverOverlay);
     scoreLabel->setAlignment(Qt::AlignCenter);
     scoreLabel->setStyleSheet("color: #64b4ff; font-size: 24px; font-weight: bold; margin-bottom: 24px;");
-    // Store label as a temporary property to update later - we'll use sender() pattern
     scoreLabel->setObjectName("gameOverScore");
 
     m_playAgainButton = new QPushButton("Play Again", m_gameOverOverlay);
