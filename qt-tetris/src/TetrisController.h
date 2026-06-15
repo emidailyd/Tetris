@@ -25,6 +25,7 @@ public:
 
 signals:
     void GameUpdated();
+    void GameOver(int finalScore);
 
 private slots:
     void AdvanceGame();
@@ -35,4 +36,5 @@ private:
     QTimer m_fallTimer;
     GameState m_gameState;
     GameSettings m_settings;
+    bool m_hasEmittedGameOver = false;
 };

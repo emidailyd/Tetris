@@ -15,9 +15,17 @@ TetrisGridWidget::TetrisGridWidget(QWidget *parent)
     setFocusPolicy(Qt::StrongFocus);
 
     connect(&m_controller, &TetrisController::GameUpdated, this, &TetrisGridWidget::OnGameUpdated);
+    connect(&m_controller, &TetrisController::GameOver, this, &TetrisGridWidget::OnGameOver);
 
     ConfigureSettingsButtons();
     m_controller.StartGame();
+}
+
+void TetrisGridWidget::StartGame()
+{
+    m_controller.StartGame();
+    setFocus();
+    update();
 }
 
 void TetrisGridWidget::paintEvent(QPaintEvent *event)
@@ -53,6 +61,11 @@ void TetrisGridWidget::OnGameUpdated()
     update();
 }
 
+void TetrisGridWidget::OnGameOver(int finalScore)
+{
+    emit GameOver(finalScore);
+}
+
 void TetrisGridWidget::ConfigureSettingsButtons()
 {
     constexpr int BUTTON_LEFT_PADDING = 16;
@@ -75,9 +88,12 @@ void TetrisGridWidget::ConfigureSettingsButtons()
     m_normalButton->setFocusPolicy(Qt::NoFocus);
     m_hardButton->setFocusPolicy(Qt::NoFocus);
 
-    connect(m_easyButton, &QPushButton::clicked, this, [this]() { SelectDifficulty(GameDifficulty::Easy); });
-    connect(m_normalButton, &QPushButton::clicked, this, [this]() { SelectDifficulty(GameDifficulty::Normal); });
-    connect(m_hardButton, &QPushButton::clicked, this, [this]() { SelectDifficulty(GameDifficulty::Hard); });
+    connect(m_easyButton, &QPushButton::clicked, this, [this]()
+            { SelectDifficulty(GameDifficulty::Easy); });
+    connect(m_normalButton, &QPushButton::clicked, this, [this]()
+            { SelectDifficulty(GameDifficulty::Normal); });
+    connect(m_hardButton, &QPushButton::clicked, this, [this]()
+            { SelectDifficulty(GameDifficulty::Hard); });
 
     UpdateDifficultyButtonStyles();
 }

@@ -16,12 +16,18 @@ class TetrisGridWidget : public QWidget
 public:
     explicit TetrisGridWidget(QWidget *parent = nullptr);
 
+    void StartGame();
+
+signals:
+    void GameOver(int finalScore);
+
 protected:
     void paintEvent(QPaintEvent *event) override;
     void keyPressEvent(QKeyEvent *event) override;
 
 private slots:
     void OnGameUpdated();
+    void OnGameOver(int finalScore);
 
 private:
     void ConfigureSettingsButtons();

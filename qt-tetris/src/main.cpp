@@ -1,13 +1,13 @@
 #include <QApplication>
 
-#include "TetrisGridWidget.h"
+#include "MainWindow.h"
 
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
 
-    TetrisGridWidget widget;
-    widget.show();
+    MainWindow window;
+    window.show();
 
     return app.exec();
 }

@@ -52,6 +52,10 @@ target_include_directories(QtTetrisCore PUBLIC
 
 add_executable(QtTetris
     qt-tetris/src/main.cpp
+    qt-tetris/src/MainWindow.cpp
+    qt-tetris/src/MainMenuWidget.cpp
+    qt-tetris/src/HighscoreWidget.cpp
+    qt-tetris/src/HighscoreManager.cpp
     qt-tetris/src/TetrisGridWidget.cpp
     qt-tetris/src/TetrisRenderer.cpp
     qt-tetris/src/TetrisController.cpp
