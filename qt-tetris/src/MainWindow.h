@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QMainWindow>
+#include "model/GameSettings.h"
 
 class MainMenuWidget;
 class TetrisGridWidget;
@@ -17,7 +18,7 @@ public:
 
 private slots:
     void ShowMainMenu();
-    void StartNewGame();
+    void StartNewGame(GameDifficulty difficulty);
     void ShowHighscores();
     void HandleGameOver(int finalScore);
     void OnExitRequested();

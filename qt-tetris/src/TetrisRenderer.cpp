@@ -1,5 +1,6 @@
 #include "TetrisRenderer.h"
 #include "model/GameConfig.h"
+#include "model/GameSettings.h"
 
 #include <QFont>
 #include <QPen>
@@ -59,7 +60,22 @@ void TetrisRenderer::RenderActivePiece(QPainter &painter, const std::optional<Te
     }
 }
 
-void TetrisRenderer::RenderStatusPanel(QPainter &painter, const QRect &rect, int score, int clearedLineCount) const
+static QString DifficultyToString(GameDifficulty difficulty)
+{
+    switch (difficulty)
+    {
+    case GameDifficulty::Easy:
+        return QStringLiteral("Easy");
+    case GameDifficulty::Normal:
+        return QStringLiteral("Normal");
+    case GameDifficulty::Hard:
+        return QStringLiteral("Hard");
+    }
+
+    return QStringLiteral("Normal");
+}
+
+void TetrisRenderer::RenderStatusPanel(QPainter &painter, const QRect &rect, int score, int clearedLineCount, GameDifficulty difficulty) const
 {
     painter.fillRect(rect, QColor(28, 36, 50));
 
@@ -82,6 +98,10 @@ void TetrisRenderer::RenderStatusPanel(QPainter &painter, const QRect &rect, int
     painter.setPen(QColor(210, 224, 240));
     painter.setFont(QFont("Arial", 14, QFont::Bold));
     painter.drawText(rect.adjusted(16, 190, -16, -16), Qt::AlignLeft | Qt::AlignTop, "Difficulty");
+
+    painter.setPen(Qt::white);
+    painter.setFont(QFont("Arial", 18, QFont::Bold));
+    painter.drawText(rect.adjusted(16, 218, -16, -16), Qt::AlignLeft | Qt::AlignTop, DifficultyToString(difficulty));
 }
 
 void TetrisRenderer::RenderGameOver(QPainter &painter, const QRect &rect) const

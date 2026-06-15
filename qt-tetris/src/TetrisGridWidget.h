@@ -17,6 +17,7 @@ public:
     explicit TetrisGridWidget(QWidget *parent = nullptr);
 
     void StartGame();
+    void SetDifficulty(GameDifficulty difficulty);
 
 signals:
     void GameOver(int finalScore);
@@ -30,13 +31,6 @@ private slots:
     void OnGameOver(int finalScore);
 
 private:
-    void ConfigureSettingsButtons();
-    void SelectDifficulty(GameDifficulty difficulty);
-    void UpdateDifficultyButtonStyles();
-
     TetrisRenderer m_renderer;
     TetrisController m_controller;
-    QPushButton *m_easyButton = nullptr;
-    QPushButton *m_normalButton = nullptr;
-    QPushButton *m_hardButton = nullptr;
 };

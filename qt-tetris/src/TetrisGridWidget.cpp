@@ -5,7 +5,6 @@
 #include <QKeyEvent>
 #include <QPainter>
 #include <QPaintEvent>
-#include <QPushButton>
 
 TetrisGridWidget::TetrisGridWidget(QWidget *parent)
     : QWidget(parent), m_controller(this)
@@ -16,9 +15,6 @@ TetrisGridWidget::TetrisGridWidget(QWidget *parent)
 
     connect(&m_controller, &TetrisController::GameUpdated, this, &TetrisGridWidget::OnGameUpdated);
     connect(&m_controller, &TetrisController::GameOver, this, &TetrisGridWidget::OnGameOver);
-
-    ConfigureSettingsButtons();
-    m_controller.StartGame();
 }
 
 void TetrisGridWidget::StartGame()
@@ -41,7 +37,7 @@ void TetrisGridWidget::paintEvent(QPaintEvent *event)
     m_renderer.RenderGrid(painter, GameConfig::BOARD_WIDTH, GameConfig::BOARD_HEIGHT);
     m_renderer.RenderBoard(painter, gameState.GameBoard());
     m_renderer.RenderActivePiece(painter, gameState.ActivePiece());
-    m_renderer.RenderStatusPanel(painter, statusPanelRect, gameState.Score(), gameState.ClearedLineCount());
+    m_renderer.RenderStatusPanel(painter, statusPanelRect, gameState.Score(), gameState.ClearedLineCount(), m_controller.GetSettings().Difficulty());
 
     if (m_controller.IsGameOver())
     {
@@ -66,54 +62,7 @@ void TetrisGridWidget::OnGameOver(int finalScore)
     emit GameOver(finalScore);
 }
 
-void TetrisGridWidget::ConfigureSettingsButtons()
-{
-    constexpr int BUTTON_LEFT_PADDING = 16;
-    constexpr int BUTTON_TOP = 222;
-    constexpr int BUTTON_HEIGHT = 30;
-    constexpr int BUTTON_SPACING = 8;
-
-    const int buttonX = GameConfig::BOARD_WIDTH + BUTTON_LEFT_PADDING;
-    const int buttonWidth = GameConfig::STATUS_PANEL_WIDTH - (BUTTON_LEFT_PADDING * 2);
-
-    m_easyButton = new QPushButton("Easy", this);
-    m_normalButton = new QPushButton("Normal", this);
-    m_hardButton = new QPushButton("Hard", this);
-
-    m_easyButton->setGeometry(buttonX, BUTTON_TOP, buttonWidth, BUTTON_HEIGHT);
-    m_normalButton->setGeometry(buttonX, BUTTON_TOP + BUTTON_HEIGHT + BUTTON_SPACING, buttonWidth, BUTTON_HEIGHT);
-    m_hardButton->setGeometry(buttonX, BUTTON_TOP + ((BUTTON_HEIGHT + BUTTON_SPACING) * 2), buttonWidth, BUTTON_HEIGHT);
-
-    m_easyButton->setFocusPolicy(Qt::NoFocus);
-    m_normalButton->setFocusPolicy(Qt::NoFocus);
-    m_hardButton->setFocusPolicy(Qt::NoFocus);
-
-    connect(m_easyButton, &QPushButton::clicked, this, [this]()
-            { SelectDifficulty(GameDifficulty::Easy); });
-    connect(m_normalButton, &QPushButton::clicked, this, [this]()
-            { SelectDifficulty(GameDifficulty::Normal); });
-    connect(m_hardButton, &QPushButton::clicked, this, [this]()
-            { SelectDifficulty(GameDifficulty::Hard); });
-
-    UpdateDifficultyButtonStyles();
-}
-
-void TetrisGridWidget::SelectDifficulty(GameDifficulty difficulty)
+void TetrisGridWidget::SetDifficulty(GameDifficulty difficulty)
 {
     m_controller.SetDifficulty(difficulty);
-    UpdateDifficultyButtonStyles();
-    setFocus();
-}
-
-void TetrisGridWidget::UpdateDifficultyButtonStyles()
-{
-    const QString activeStyle = "QPushButton { background-color: #64b4ff; color: #101820; font-weight: bold; border: 1px solid #dcecff; border-radius: 4px; padding: 5px; }"
-                                "QPushButton:hover { background-color: #7bc1ff; }";
-    const QString inactiveStyle = "QPushButton { background-color: #334155; color: #f4f7fb; border: 1px solid #708198; border-radius: 4px; padding: 5px; }"
-                                  "QPushButton:hover { background-color: #41536a; border-color: #9fb3ca; }";
-
-    const GameDifficulty difficulty = m_controller.GetSettings().Difficulty();
-    m_easyButton->setStyleSheet(difficulty == GameDifficulty::Easy ? activeStyle : inactiveStyle);
-    m_normalButton->setStyleSheet(difficulty == GameDifficulty::Normal ? activeStyle : inactiveStyle);
-    m_hardButton->setStyleSheet(difficulty == GameDifficulty::Hard ? activeStyle : inactiveStyle);
 }

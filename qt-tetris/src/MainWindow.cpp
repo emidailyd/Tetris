@@ -41,8 +41,9 @@ void MainWindow::ShowMainMenu()
     m_stack->setCurrentWidget(m_mainMenu);
 }
 
-void MainWindow::StartNewGame()
+void MainWindow::StartNewGame(GameDifficulty difficulty)
 {
+    m_gameWidget->SetDifficulty(difficulty);
     m_gameWidget->StartGame();
     m_stack->setCurrentWidget(m_gameWidget);
 }
