@@ -17,7 +17,7 @@ namespace
 MainMenuWidget::MainMenuWidget(QWidget *parent)
     : QWidget(parent)
 {
-    m_titleLabel = new QLabel("Qt Tetris", this);
+    m_titleLabel = new QLabel("Tetris", this);
     m_titleLabel->setAlignment(Qt::AlignCenter);
     m_titleLabel->setStyleSheet("font-size: 32px; font-weight: bold; color: white;");
 

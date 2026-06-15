@@ -4,7 +4,6 @@
 #include "MainMenuWidget.h"
 #include "TetrisGridWidget.h"
 
-#include <QMessageBox>
 #include <QStackedWidget>
 
 MainWindow::MainWindow(QWidget *parent)
@@ -32,6 +31,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(m_highscoreWidget, &HighscoreWidget::BackRequested, this, &MainWindow::ShowMainMenu);
     connect(m_gameWidget, &TetrisGridWidget::GameOver, this, &MainWindow::HandleGameOver);
+    connect(m_gameWidget, &TetrisGridWidget::ReturnToMainMenuRequested, this, &MainWindow::ShowMainMenu);
 
     ShowMainMenu();
 }
@@ -58,7 +58,6 @@ void MainWindow::HandleGameOver(int finalScore)
 {
     m_highscoreManager->AddScore(finalScore);
     m_highscoreWidget->UpdateDisplay(m_highscoreManager->GetTopScores());
-    QMessageBox::information(this, "Game Over", QStringLiteral("Game over! Score: %1").arg(finalScore));
     m_stack->setCurrentWidget(m_highscoreWidget);
 }
 
