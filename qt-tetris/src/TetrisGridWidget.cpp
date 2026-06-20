@@ -6,6 +6,8 @@
 #include <QPainter>
 #include <QPaintEvent>
 #include <QPushButton>
+#include <QVBoxLayout>
+#include <QLabel>
 
 TetrisGridWidget::TetrisGridWidget(QWidget *parent)
     : QWidget(parent), m_controller(this)
@@ -15,9 +17,19 @@ TetrisGridWidget::TetrisGridWidget(QWidget *parent)
     setFocusPolicy(Qt::StrongFocus);
 
     connect(&m_controller, &TetrisController::GameUpdated, this, &TetrisGridWidget::OnGameUpdated);
+    connect(&m_controller, &TetrisController::GameOver, this, &TetrisGridWidget::OnGameOver);
 
-    ConfigureSettingsButtons();
+    CreatePauseOverlay();
+    CreateGameOverOverlay();
+}
+
+void TetrisGridWidget::StartGame()
+{
+    m_pauseOverlay->hide();
+    m_gameOverOverlay->hide();
     m_controller.StartGame();
+    setFocus();
+    update();
 }
 
 void TetrisGridWidget::paintEvent(QPaintEvent *event)
@@ -33,18 +45,26 @@ void TetrisGridWidget::paintEvent(QPaintEvent *event)
     m_renderer.RenderGrid(painter, GameConfig::BOARD_WIDTH, GameConfig::BOARD_HEIGHT);
     m_renderer.RenderBoard(painter, gameState.GameBoard());
     m_renderer.RenderActivePiece(painter, gameState.ActivePiece());
-    m_renderer.RenderStatusPanel(painter, statusPanelRect, gameState.Score(), gameState.ClearedLineCount());
-
-    if (m_controller.IsGameOver())
-    {
-        m_renderer.RenderGameOver(painter, QRect(0, 0, GameConfig::BOARD_WIDTH, GameConfig::BOARD_HEIGHT));
-    }
+    m_renderer.RenderStatusPanel(painter, statusPanelRect, gameState.Score(), gameState.ClearedLineCount(), m_controller.GetSettings().Difficulty());
 
     event->accept();
 }
 
 void TetrisGridWidget::keyPressEvent(QKeyEvent *event)
 {
+    if (event->key() == Qt::Key_Escape && !m_controller.IsGameOver())
+    {
+        TogglePause();
+        event->accept();
+        return;
+    }
+
+    if (m_controller.IsPaused())
+    {
+        event->accept();
+        return;
+    }
+
     m_controller.HandleKeyPress(event);
 }
 
@@ -53,51 +73,140 @@ void TetrisGridWidget::OnGameUpdated()
     update();
 }
 
-void TetrisGridWidget::ConfigureSettingsButtons()
+void TetrisGridWidget::OnGameOver(int finalScore)
 {
-    constexpr int BUTTON_LEFT_PADDING = 16;
-    constexpr int BUTTON_TOP = 222;
-    constexpr int BUTTON_HEIGHT = 30;
-    constexpr int BUTTON_SPACING = 8;
-
-    const int buttonX = GameConfig::BOARD_WIDTH + BUTTON_LEFT_PADDING;
-    const int buttonWidth = GameConfig::STATUS_PANEL_WIDTH - (BUTTON_LEFT_PADDING * 2);
-
-    m_easyButton = new QPushButton("Easy", this);
-    m_normalButton = new QPushButton("Normal", this);
-    m_hardButton = new QPushButton("Hard", this);
-
-    m_easyButton->setGeometry(buttonX, BUTTON_TOP, buttonWidth, BUTTON_HEIGHT);
-    m_normalButton->setGeometry(buttonX, BUTTON_TOP + BUTTON_HEIGHT + BUTTON_SPACING, buttonWidth, BUTTON_HEIGHT);
-    m_hardButton->setGeometry(buttonX, BUTTON_TOP + ((BUTTON_HEIGHT + BUTTON_SPACING) * 2), buttonWidth, BUTTON_HEIGHT);
-
-    m_easyButton->setFocusPolicy(Qt::NoFocus);
-    m_normalButton->setFocusPolicy(Qt::NoFocus);
-    m_hardButton->setFocusPolicy(Qt::NoFocus);
-
-    connect(m_easyButton, &QPushButton::clicked, this, [this]() { SelectDifficulty(GameDifficulty::Easy); });
-    connect(m_normalButton, &QPushButton::clicked, this, [this]() { SelectDifficulty(GameDifficulty::Normal); });
-    connect(m_hardButton, &QPushButton::clicked, this, [this]() { SelectDifficulty(GameDifficulty::Hard); });
-
-    UpdateDifficultyButtonStyles();
+    if (m_gameOverScoreLabel)
+    {
+        m_gameOverScoreLabel->setText(QString::number(finalScore));
+    }
+    m_gameOverOverlay->show();
+    m_gameOverOverlay->raise();
+    emit GameOver(finalScore);
 }
 
-void TetrisGridWidget::SelectDifficulty(GameDifficulty difficulty)
+void TetrisGridWidget::CreatePauseOverlay()
+{
+    m_pauseOverlay = new QWidget(this);
+    m_pauseOverlay->setGeometry(0, 0, width(), height());
+    m_pauseOverlay->setStyleSheet("background-color: rgba(0, 0, 0, 180);");
+    m_pauseOverlay->hide();
+
+    QLabel *pauseLabel = new QLabel("Paused", m_pauseOverlay);
+    pauseLabel->setAlignment(Qt::AlignCenter);
+    pauseLabel->setStyleSheet("color: white; font-size: 28px; font-weight: bold;");
+
+    m_resumeButton = new QPushButton("Resume", m_pauseOverlay);
+    m_restartButton = new QPushButton("Restart", m_pauseOverlay);
+    m_mainMenuButton = new QPushButton("Main Menu", m_pauseOverlay);
+
+    m_resumeButton->setFixedHeight(36);
+    m_restartButton->setFixedHeight(36);
+    m_mainMenuButton->setFixedHeight(36);
+    m_resumeButton->setFocusPolicy(Qt::NoFocus);
+    m_restartButton->setFocusPolicy(Qt::NoFocus);
+    m_mainMenuButton->setFocusPolicy(Qt::NoFocus);
+
+    connect(m_resumeButton, &QPushButton::clicked, this, &TetrisGridWidget::OnPauseResume);
+    connect(m_restartButton, &QPushButton::clicked, this, &TetrisGridWidget::OnPauseRestart);
+    connect(m_mainMenuButton, &QPushButton::clicked, this, &TetrisGridWidget::OnPauseReturnToMenu);
+
+    QVBoxLayout *overlayLayout = new QVBoxLayout(m_pauseOverlay);
+    overlayLayout->setAlignment(Qt::AlignCenter);
+    overlayLayout->setSpacing(16);
+    overlayLayout->addWidget(pauseLabel);
+    overlayLayout->addWidget(m_resumeButton);
+    overlayLayout->addWidget(m_restartButton);
+    overlayLayout->addWidget(m_mainMenuButton);
+    overlayLayout->setContentsMargins(80, 80, 80, 80);
+}
+
+void TetrisGridWidget::TogglePause()
+{
+    const bool paused = !m_controller.IsPaused();
+    m_controller.SetPaused(paused);
+    m_pauseOverlay->setVisible(paused);
+    if (paused)
+    {
+        m_pauseOverlay->raise();
+    }
+    else
+    {
+        setFocus();
+    }
+    update();
+}
+
+void TetrisGridWidget::OnPauseResume()
+{
+    TogglePause();
+}
+
+void TetrisGridWidget::OnPauseRestart()
+{
+    m_pauseOverlay->hide();
+    m_controller.StartGame();
+    update();
+}
+
+void TetrisGridWidget::OnPauseReturnToMenu()
+{
+    m_pauseOverlay->hide();
+    m_controller.SetPaused(true);
+    emit ReturnToMainMenuRequested();
+}
+
+void TetrisGridWidget::SetDifficulty(GameDifficulty difficulty)
 {
     m_controller.SetDifficulty(difficulty);
-    UpdateDifficultyButtonStyles();
-    setFocus();
 }
 
-void TetrisGridWidget::UpdateDifficultyButtonStyles()
+void TetrisGridWidget::CreateGameOverOverlay()
 {
-    const QString activeStyle = "QPushButton { background-color: #64b4ff; color: #101820; font-weight: bold; border: 1px solid #dcecff; border-radius: 4px; padding: 5px; }"
-                                "QPushButton:hover { background-color: #7bc1ff; }";
-    const QString inactiveStyle = "QPushButton { background-color: #334155; color: #f4f7fb; border: 1px solid #708198; border-radius: 4px; padding: 5px; }"
-                                  "QPushButton:hover { background-color: #41536a; border-color: #9fb3ca; }";
+    m_gameOverOverlay = new QWidget(this);
+    m_gameOverOverlay->setGeometry(0, 0, width(), height());
+    m_gameOverOverlay->setStyleSheet("background-color: rgba(0, 0, 0, 180);");
+    m_gameOverOverlay->hide();
 
-    const GameDifficulty difficulty = m_controller.GetSettings().Difficulty();
-    m_easyButton->setStyleSheet(difficulty == GameDifficulty::Easy ? activeStyle : inactiveStyle);
-    m_normalButton->setStyleSheet(difficulty == GameDifficulty::Normal ? activeStyle : inactiveStyle);
-    m_hardButton->setStyleSheet(difficulty == GameDifficulty::Hard ? activeStyle : inactiveStyle);
+    QLabel *gameOverLabel = new QLabel("Game Over", m_gameOverOverlay);
+    gameOverLabel->setAlignment(Qt::AlignCenter);
+    gameOverLabel->setStyleSheet("color: white; font-size: 32px; font-weight: bold; margin-bottom: 20px;");
+
+    m_gameOverScoreLabel = new QLabel(m_gameOverOverlay);
+    m_gameOverScoreLabel->setAlignment(Qt::AlignCenter);
+    m_gameOverScoreLabel->setStyleSheet("color: #64b4ff; font-size: 24px; font-weight: bold; margin-bottom: 24px;");
+
+    m_playAgainButton = new QPushButton("Play Again", m_gameOverOverlay);
+    m_viewScoresButton = new QPushButton("View Highscores", m_gameOverOverlay);
+    m_gameOverMenuButton = new QPushButton("Main Menu", m_gameOverOverlay);
+
+    m_playAgainButton->setFixedHeight(36);
+    m_viewScoresButton->setFixedHeight(36);
+    m_gameOverMenuButton->setFixedHeight(36);
+    m_playAgainButton->setFocusPolicy(Qt::NoFocus);
+    m_viewScoresButton->setFocusPolicy(Qt::NoFocus);
+    m_gameOverMenuButton->setFocusPolicy(Qt::NoFocus);
+
+    connect(m_playAgainButton, &QPushButton::clicked, this, [this]()
+            {
+        m_gameOverOverlay->hide();
+        StartGame(); });
+    connect(m_viewScoresButton, &QPushButton::clicked, this, [this]()
+            {
+        m_gameOverOverlay->hide();
+        emit ViewHighscoresRequested(); });
+    connect(m_gameOverMenuButton, &QPushButton::clicked, this, [this]()
+            {
+        m_gameOverOverlay->hide();
+        emit ReturnToMainMenuRequested(); });
+
+    QVBoxLayout *overlayLayout = new QVBoxLayout(m_gameOverOverlay);
+    overlayLayout->setAlignment(Qt::AlignCenter);
+    overlayLayout->setSpacing(16);
+    overlayLayout->addWidget(gameOverLabel);
+    overlayLayout->addWidget(m_gameOverScoreLabel);
+    overlayLayout->addSpacing(16);
+    overlayLayout->addWidget(m_playAgainButton);
+    overlayLayout->addWidget(m_viewScoresButton);
+    overlayLayout->addWidget(m_gameOverMenuButton);
+    overlayLayout->setContentsMargins(80, 80, 80, 80);
 }

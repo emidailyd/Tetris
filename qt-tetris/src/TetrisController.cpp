@@ -53,6 +53,8 @@ void TetrisController::HandleKeyPress(QKeyEvent *event)
 
 void TetrisController::StartGame()
 {
+    m_hasEmittedGameOver = false;
+    m_paused = false;
     m_fallTimer.start();
     ResetGame();
 }
@@ -60,6 +62,25 @@ void TetrisController::StartGame()
 void TetrisController::ResetGame()
 {
     m_gameState.Reset();
+    m_hasEmittedGameOver = false;
+}
+
+void TetrisController::SetPaused(bool paused)
+{
+    if (m_paused == paused)
+    {
+        return;
+    }
+
+    m_paused = paused;
+    if (m_paused)
+    {
+        m_fallTimer.stop();
+    }
+    else if (!m_gameState.IsGameOver())
+    {
+        m_fallTimer.start();
+    }
 }
 
 void TetrisController::SetDifficulty(GameDifficulty difficulty)
@@ -81,11 +102,23 @@ void TetrisController::ApplySettings()
 
 void TetrisController::AdvanceGame()
 {
+    if (m_paused)
+    {
+        return;
+    }
+
     if (m_gameState.IsGameOver())
     {
+        m_fallTimer.stop();
         return;
     }
 
     m_gameState.StepDownOrLock();
     emit GameUpdated();
+
+    if (m_gameState.IsGameOver() && !m_hasEmittedGameOver)
+    {
+        m_hasEmittedGameOver = true;
+        emit GameOver(m_gameState.Score());
+    }
 }

@@ -18,6 +18,8 @@ public:
     void StartGame();
     void ResetGame();
     void SetDifficulty(GameDifficulty difficulty);
+    void SetPaused(bool paused);
+    bool IsPaused() const { return m_paused; }
 
     const GameState &GetGameState() const { return m_gameState; }
     const GameSettings &GetSettings() const { return m_settings; }
@@ -25,6 +27,7 @@ public:
 
 signals:
     void GameUpdated();
+    void GameOver(int finalScore);
 
 private slots:
     void AdvanceGame();
@@ -35,4 +38,6 @@ private:
     QTimer m_fallTimer;
     GameState m_gameState;
     GameSettings m_settings;
+    bool m_hasEmittedGameOver = false;
+    bool m_paused = false;
 };
