@@ -8,6 +8,7 @@
 class QKeyEvent;
 class QPaintEvent;
 class QPushButton;
+class QLabel;
 
 class TetrisGridWidget : public QWidget
 {
@@ -21,6 +22,7 @@ public:
 
 signals:
     void GameOver(int finalScore);
+    void ViewHighscoresRequested();
     void ReturnToMainMenuRequested();
 
 protected:
@@ -49,4 +51,5 @@ private:
     QPushButton *m_playAgainButton = nullptr;
     QPushButton *m_viewScoresButton = nullptr;
     QPushButton *m_gameOverMenuButton = nullptr;
+    QLabel *m_gameOverScoreLabel = nullptr;
 };

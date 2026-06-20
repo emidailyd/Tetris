@@ -19,7 +19,6 @@ public:
     void RenderBoard(QPainter &painter, const Board &board) const;
     void RenderActivePiece(QPainter &painter, const std::optional<Tetromino> &activePiece) const;
     void RenderStatusPanel(QPainter &painter, const QRect &rect, int score, int clearedLineCount, GameDifficulty difficulty) const;
-    void RenderGameOver(QPainter &painter, const QRect &rect) const;
 
     static QColor ColorForTetrominoType(TetrominoType type);
 

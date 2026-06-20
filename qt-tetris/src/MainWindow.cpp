@@ -31,6 +31,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(m_highscoreWidget, &HighscoreWidget::BackRequested, this, &MainWindow::ShowMainMenu);
     connect(m_gameWidget, &TetrisGridWidget::GameOver, this, &MainWindow::HandleGameOver);
+    connect(m_gameWidget, &TetrisGridWidget::ViewHighscoresRequested, this, &MainWindow::ShowHighscores);
     connect(m_gameWidget, &TetrisGridWidget::ReturnToMainMenuRequested, this, &MainWindow::ShowMainMenu);
 
     ShowMainMenu();
@@ -58,7 +59,6 @@ void MainWindow::HandleGameOver(int finalScore)
 {
     m_highscoreManager->AddScore(finalScore);
     m_highscoreWidget->UpdateDisplay(m_highscoreManager->GetTopScores());
-    m_stack->setCurrentWidget(m_highscoreWidget);
 }
 
 void MainWindow::OnExitRequested()

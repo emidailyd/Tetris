@@ -104,14 +104,6 @@ void TetrisRenderer::RenderStatusPanel(QPainter &painter, const QRect &rect, int
     painter.drawText(rect.adjusted(16, 218, -16, -16), Qt::AlignLeft | Qt::AlignTop, DifficultyToString(difficulty));
 }
 
-void TetrisRenderer::RenderGameOver(QPainter &painter, const QRect &rect) const
-{
-    painter.fillRect(rect, QColor(0, 0, 0, 160));
-    painter.setPen(Qt::white);
-    painter.setFont(QFont("Arial", 18, QFont::Bold));
-    painter.drawText(rect, Qt::AlignCenter, "Game Over\nPress R to restart");
-}
-
 QColor TetrisRenderer::ColorForTetrominoType(TetrominoType type)
 {
     switch (type)

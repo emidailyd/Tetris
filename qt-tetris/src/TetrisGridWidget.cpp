@@ -47,11 +47,6 @@ void TetrisGridWidget::paintEvent(QPaintEvent *event)
     m_renderer.RenderActivePiece(painter, gameState.ActivePiece());
     m_renderer.RenderStatusPanel(painter, statusPanelRect, gameState.Score(), gameState.ClearedLineCount(), m_controller.GetSettings().Difficulty());
 
-    if (m_controller.IsGameOver())
-    {
-        m_renderer.RenderGameOver(painter, QRect(0, 0, GameConfig::BOARD_WIDTH, GameConfig::BOARD_HEIGHT));
-    }
-
     event->accept();
 }
 
@@ -80,6 +75,10 @@ void TetrisGridWidget::OnGameUpdated()
 
 void TetrisGridWidget::OnGameOver(int finalScore)
 {
+    if (m_gameOverScoreLabel)
+    {
+        m_gameOverScoreLabel->setText(QString::number(finalScore));
+    }
     m_gameOverOverlay->show();
     m_gameOverOverlay->raise();
     emit GameOver(finalScore);
@@ -172,10 +171,9 @@ void TetrisGridWidget::CreateGameOverOverlay()
     gameOverLabel->setAlignment(Qt::AlignCenter);
     gameOverLabel->setStyleSheet("color: white; font-size: 32px; font-weight: bold; margin-bottom: 20px;");
 
-    QLabel *scoreLabel = new QLabel(m_gameOverOverlay);
-    scoreLabel->setAlignment(Qt::AlignCenter);
-    scoreLabel->setStyleSheet("color: #64b4ff; font-size: 24px; font-weight: bold; margin-bottom: 24px;");
-    scoreLabel->setObjectName("gameOverScore");
+    m_gameOverScoreLabel = new QLabel(m_gameOverOverlay);
+    m_gameOverScoreLabel->setAlignment(Qt::AlignCenter);
+    m_gameOverScoreLabel->setStyleSheet("color: #64b4ff; font-size: 24px; font-weight: bold; margin-bottom: 24px;");
 
     m_playAgainButton = new QPushButton("Play Again", m_gameOverOverlay);
     m_viewScoresButton = new QPushButton("View Highscores", m_gameOverOverlay);
@@ -195,7 +193,7 @@ void TetrisGridWidget::CreateGameOverOverlay()
     connect(m_viewScoresButton, &QPushButton::clicked, this, [this]()
             {
         m_gameOverOverlay->hide();
-        emit GameOver(m_controller.GetGameState().Score()); });
+        emit ViewHighscoresRequested(); });
     connect(m_gameOverMenuButton, &QPushButton::clicked, this, [this]()
             {
         m_gameOverOverlay->hide();
@@ -205,7 +203,7 @@ void TetrisGridWidget::CreateGameOverOverlay()
     overlayLayout->setAlignment(Qt::AlignCenter);
     overlayLayout->setSpacing(16);
     overlayLayout->addWidget(gameOverLabel);
-    overlayLayout->addWidget(scoreLabel);
+    overlayLayout->addWidget(m_gameOverScoreLabel);
     overlayLayout->addSpacing(16);
     overlayLayout->addWidget(m_playAgainButton);
     overlayLayout->addWidget(m_viewScoresButton);
